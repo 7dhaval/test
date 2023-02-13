@@ -29,9 +29,11 @@ app.post("/register", async(req, res) => {
                 confirmpassword:cpassword,
                 phone: req.body.phone,
                 gender: req.body.gender
-            })
-          const registered = await registerEmployess.save();
-          res.status(201).render("index");
+            }) 
+           const registered = await registerEmployess.save();
+          // res.status(201).render("index");
+          res.status(201).send(registered);
+          // res.sendFile(__dirname + '/public/welcome.html');
         }else{
             res.send("passwords are not matching");
         }
@@ -41,15 +43,33 @@ app.post("/register", async(req, res) => {
     }
   });
   
-app.get('/register', function(req, res) {
+app.get('/register', async(req, res) => {
     res.sendFile(__dirname + '/public/index.html');
   });
 
-  app.get('/login', function(req, res) {
+  app.get('/login', async(req, res) => {
     res.sendFile(__dirname + '/public/login.html');
   });
 
+  //login check
+  app.post("/login", async(req,res) =>{
+    try{
+      const email = req.body.email;
+      const password = req.body.password;
+      console.log(email);
+      console.log(password);
 
+      const useremail = await register.findOne({email:email});
+      if(useremail.password === password){
+        res.sendFile(__dirname + '/public/welcome.html');
+      }else{
+        res.send("Details are wrong")
+      }
+
+    }catch(err){
+      res.status(400).send("Invalid Email");
+    }
+  })
 
 app.listen(port, () =>{
     console.log(`Server is Running on ${port}`);
